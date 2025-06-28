@@ -15,8 +15,7 @@ encounters = [
     {"type": "event", "description": "You stumbled into a {event}!", "effect": "event"},
 ]
 
-# Enemy and event pools
-enemies = ["goblin", "dragon", "bandit", "slime"]
+# event pools
 events = ["mystic fog", "ancient ruin", "strange portal"]
 
 ### HELPER FUNCTIONS ###
@@ -36,11 +35,11 @@ def build_explore_prompt(encounter_type, item=None, enemy=None, event=None):
         settings = ""
         actions = ""
         return base + item_prompt 
-    elif encounter_type == "enemy":
+    elif encounter_type == "enemy" and enemy:
         enemy_prompt = f"While exploring the player encounters a hostile creature: {enemy}"
         settings = ""
         actions = ""
-        return base + enemy_prompt
+        return base + enemy_prompt + f" Enemy: {enemy.name}, Description: {enemy.description}"
     elif encounter_type == "event":
         event_prompt = f"The player enters a strange event: {event}"
         settings = ""
@@ -100,11 +99,13 @@ def explore_area():
                 else:
                     print("⚠️ Unknown command. Try again or type 'leave' to exit")
         elif encounter["type"] == "enemy":
-            enemy = random.choice(enemies)
+            from game.npc.enemies import enemies as enemy_dict
+            enemy = random.choice(list(enemy_dict.values()))
+            
             prompt = build_explore_prompt("enemy", enemy=enemy)
             description = generate_encounter_description(prompt)
+            
             print(description)
-            print(f"You encountered a enemey: {enemy}")
 
             # Placeholder to later integrate battle system
             from game.functions.combat import engage_battle

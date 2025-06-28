@@ -1,5 +1,5 @@
 from game.world import player as default_player
-from npc.enemies import enemies
+from game.npc.enemies import enemies
 import random
 
 def engage_battle(enemy_name, player=default_player):
@@ -19,11 +19,11 @@ def engage_battle(enemy_name, player=default_player):
             enemy.take_damage(player_damage)
             print(f"{enemy.name} has {enemy.hp} HP left.\n")
         elif action == "run()":
-            chance_of_escape = int(random.random()) # return a value between 0 and 1
+            chance_of_escape = random.randint(0, 1) # return a value between 0 and 1
             if chance_of_escape == 1:
                 print("🏃 You successfully escaped!")
                 return
-            else:
+            elif chance_of_escape == 0:
                 print("You failed to escape!\n")
                 continue
         else:
