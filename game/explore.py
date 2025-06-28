@@ -107,6 +107,9 @@ def explore_area():
             print(f"You encountered a enemey: {enemy}")
 
             # Placeholder to later integrate battle system
+            from game.functions.combat import engage_battle
+            engage_battle(enemy)
+        
         elif encounter["type"] == "event":
             event = random.choice(events)
             prompt = build_explore_prompt("event", event=event)

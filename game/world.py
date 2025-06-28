@@ -32,6 +32,7 @@ biomes = ["forest", "desert", "mountain", "swamp", "cave", "plains"]
 class Player:
     def __init__(self, name):
         self.name = name
+        self.hp = 115
         self.level = 1
         self.ingredient_bag = set()
         self.inventory = {}
