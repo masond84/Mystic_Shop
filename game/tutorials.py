@@ -187,4 +187,17 @@ def contextual_feedback(user_input, player=default_player):
                 player.learn_recipe(recipe_name)
     elif re.match(r"^for\s+\w+,\s*\w+\s+in\s+recipes\.items\(\):", user_input.strip()):
         player.show_learned_recipes()
-                
+
+def examine_item(item_name):
+    if item_name in ingredient_items:
+        print(f"🔍 '{item_name.title()}' is a raw ingredient used in recipes like:")
+        for recipe, ingredient in all_recipes.items():
+            if item_name in ingredient:
+                print(f" - {recipe}")
+    elif item_name in crafted_items:
+        print(f"🛠️ '{item_name.title()}' is a crafted item made using a recipe.")
+        print(f" Ingredients needed: {', '.join(all_recipes[item_name])}")
+    elif item_name in regular_items:
+        print(f" 📦 '{item_name.title()}' is a common itme. You can store it in your inventory.")
+    else:
+        print(f" This item seems.... unknown.")

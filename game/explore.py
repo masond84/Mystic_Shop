@@ -67,6 +67,7 @@ def explore_area():
 
     while True:
         encounter = random.choice(encounters)
+        encounter = encounters[1]
         description = ""
 
         # Generate a random occurencce
@@ -80,7 +81,7 @@ def explore_area():
             # Prompt For Player Input on What To Do
             while True:
                 print("What would you like to do?")
-                print("Exammple: ingredient_bag.add('unicorn hair'), leave, examine.")
+                print("You can add items to your ingredient bag or inventory - or leave it.")
                 action = input(">>> ").strip().lower()
 
                 if action in ("leave", "back"):
@@ -89,13 +90,15 @@ def explore_area():
                 elif action == "menu":
                     from game.engine import start_game
                     start_game()
-                elif action.startswith("ingredient_bag.add") or action.startswith("inventory.update") or "ingredient_bag" in action:
+                elif "ingredient_bag" in action or "inventory.update" in action:
                     from game.tutorials import contextual_feedback
                     contextual_feedback(action)
-                    return
+                    break
+                elif action.lower() == "examine":
+                    from game.tutorials import examine_item
+                    examine_item(item)
                 else:
                     print("⚠️ Unknown command. Try again or type 'leave' to exit")
-
         elif encounter["type"] == "enemy":
             enemy = random.choice(enemies)
             prompt = build_explore_prompt("enemy", enemy=enemy)

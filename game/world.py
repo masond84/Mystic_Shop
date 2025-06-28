@@ -25,7 +25,10 @@ ingredient_items = {ingredient for recipe in all_recipes.values() for ingredient
 crafted_items = set(all_recipes.keys())
 # Global regular items
 regular_items = items - ingredient_items - crafted_items
- 
+
+# ALL Biomes
+biomes = ["forest", "desert", "mountain", "swamp", "cave", "plains"]
+
 class Player:
     def __init__(self, name):
         self.name = name
