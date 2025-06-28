@@ -35,6 +35,7 @@ class Player:
         self.hp = 115
         self.level = 1
         self.attack = 20 # initial attack power
+        self.defense = 5
         self.ingredient_bag = set()
         self.inventory = {}
         self.learned_recipes = set()
