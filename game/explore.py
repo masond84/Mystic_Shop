@@ -2,8 +2,7 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 import random
-from game.world import player, items as all_items, all_recipes
-from game.tutorials import contextual_feedback
+from game.world import items as all_items
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -61,11 +60,45 @@ def generate_encounter_description(prompt):
     except Exception as e:
         return f"[Error generating description: {e}]"
 
+# Function to handle Item Encounters
+def handle_item_encounter(item):
+    from game.world import player, ingredient_items, regular_items, crafted_items
+    from game.tutorials import contextual_feedback
+
+    print(f"\nYou seemed to have found an item: {item}")
+    print("What would you like to do?")
+    print("- You can add items to your ingredient bag or inventory - or leave it.")
+    print("Type `hint()` for help.")
+
+    while True:
+        user_input = input(">>> ").strip().lower()
+
+        if user_input in ["leave()", "leave", "skip()"]:
+            print(f"🚶 You leave the {item} behind.")
+            break
+        elif user_input == "hint()":
+            if item in ingredient_items:
+                print(f"💡 Try: ingredient_bag.add('{item}')")
+            elif item in regular_items or item in crafted_items:
+                print(f"💡 Try: inventory.update('{{'{item}': 1}}')")
+            else:
+                print("This item is unknown. Maybe inspect it or leave it.")
+        elif "ingredient_bag.add" in user_input or "inventory.update" in user_input:
+            contextual_feedback(user_input)
+            if item in player.ingredient_bag or item in player.inventory:
+                break # Exit after sueccessful add
+        elif user_input == "examine()":
+            from game.tutorials import examine_item 
+            examine_item(item)
+        else:
+            print("⚠️ Unknown command. Try again or type `leave()` or 'hint()'")
+
 def explore_area():
     print("\n🧭 Entering Exploration Mode! Type 'menu' to return to main menu.\n")
 
     while True:
         encounter = random.choice(encounters)
+        encounter = encounters[0] # For testing, force item encounter
 
         # Generate a random occurencce
         if encounter["type"] == "item":
@@ -73,29 +106,8 @@ def explore_area():
             prompt = build_explore_prompt("item", item=item)
             description = generate_encounter_description(prompt)
             print(description)
-            print(f"You seemed to find an item: {item}")
+            handle_item_encounter(item)
 
-            # Prompt For Player Input on What To Do
-            while True:
-                print("What would you like to do?")
-                print("You can add items to your ingredient bag or inventory - or leave it.")
-                action = input(">>> ").strip().lower()
-
-                if action in ("leave", "back"):
-                    print("You leave the item and move on.\n")
-                    break
-                elif action == "menu":
-                    from game.engine import start_game
-                    start_game()
-                elif "ingredient_bag" in action or "inventory.update" in action:
-                    from game.tutorials import contextual_feedback
-                    contextual_feedback(action)
-                    break
-                elif action.lower() == "examine":
-                    from game.tutorials import examine_item
-                    examine_item(item)
-                else:
-                    print("⚠️ Unknown command. Try again or type 'leave' to exit")
         elif encounter["type"] == "enemy":
             from game.npc.enemies import enemies as enemy_dict
             enemy_factor = random.choice(list(enemy_dict.values()))
@@ -119,8 +131,12 @@ def explore_area():
 
             # Placeholder: Unique event logic
         
-        # Handle user input inside explore mode
-        user_input = input(">>> ").strip().lower()
-        if user_input in ("menu", "exit", "return"):
-            print("Returning to the main menu...\n")
-            break
+        while True:
+            proceed = input("\n🌿 Would you like to continue exploring?" + " (yes/no):\n" + ">>> ").strip().lower()
+            if proceed in ("yes", "y"):
+                break
+            elif proceed in ("no", "n", "menu", "exit", "return"):
+                print("📜 Returning to main menu...\n")
+                return
+            else:
+                print("Please enter 'yes' or 'no'.")

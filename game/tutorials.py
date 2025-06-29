@@ -155,19 +155,19 @@ def contextual_feedback(user_input, player=default_player):
     ### INVENTORY MANAGEMENT ###
     # Player adds an item to the inventory backpack dictionary
     elif user_input.startswith("inventory.update("):
-        match = re.search(r"update\(\{\s*['\"](.+?)['\"]\s*:\s*(\d+)\s*\}\)", user_input)
+        match = re.search(r"inventory\.update\(\s*\{\s*['\"]?(.+?)['\"]?\s*:\s*(\d+)\s*\}\s*\)", user_input)
+
         if match:
             item_name = match.group(1).strip()
             count = int(match.group(2))
 
-            if item_name not in crafted_items and item_name not in regular_items:
-                print(f"❌ '{item_name}' cannot be added to inventory directly. It must be crafted or discovered.")
-                print("💡 Only crafted or discoverable items go in your inventory.")
-                return 
-            
-            success = player.craft_item(item_name)
-            if success:
+            # Normalize name
+            item_name = item_name.lower()
+            if item_name in crafted_items or item_name in regular_items:
+                player.add_to_inventory(item_name, quantity=count)
                 player.show_inventory()
+            else:
+                print(f"❌ '{item_name}' cannot be added to inventory directly. It must be crafted or discovered.")
         else:
             print("⚠️ Invalid syntax. Try: inventory.update({'potion': 1})")
     # Player checks items in their inventory backpack dictionary
