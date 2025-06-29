@@ -33,8 +33,9 @@ class Player:
     def __init__(self, name):
         self.name = name
         self.hp = 115
+        self.max_hp = 115
         self.level = 1
-        self.attack = 20 # initial attack power
+        self.attack = 5 # initial attack power
         self.defense = 5
         self.ingredient_bag = set()
         self.inventory = {}

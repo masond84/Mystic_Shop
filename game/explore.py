@@ -66,8 +66,6 @@ def explore_area():
 
     while True:
         encounter = random.choice(encounters)
-        encounter = encounters[1]
-        description = ""
 
         # Generate a random occurencce
         if encounter["type"] == "item":
@@ -100,8 +98,9 @@ def explore_area():
                     print("⚠️ Unknown command. Try again or type 'leave' to exit")
         elif encounter["type"] == "enemy":
             from game.npc.enemies import enemies as enemy_dict
-            enemy = random.choice(list(enemy_dict.values()))
-            
+            enemy_factor = random.choice(list(enemy_dict.values()))
+            enemy = enemy_factor()
+
             prompt = build_explore_prompt("enemy", enemy=enemy)
             description = generate_encounter_description(prompt)
             

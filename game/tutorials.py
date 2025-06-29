@@ -174,10 +174,12 @@ def contextual_feedback(user_input, player=default_player):
     elif user_input.startswith("inventory.keys("):
         if player.inventory:
             player.show_inventory()
+            return True
         else:
             print("\n🎒 Inventory:")
             print("...")
             print("Your inventory is empty")
+            return True
     ### RECIPE MANAGEMENT ###
     elif user_input.strip().startswith("recipes.get("):
         match = re.search(r"recipes\.get\(['\"](.+?)['\"]\)", user_input)

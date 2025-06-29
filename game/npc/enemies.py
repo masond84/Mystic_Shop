@@ -6,6 +6,7 @@ class Enemy:
     def __init__(self, name, hp, attack, defense, description=""):
         self.name = name
         self.hp = hp
+        self.max_hp = hp
         self.attack = attack
         self.defense = defense
         self.description = description
@@ -25,7 +26,7 @@ class Enemy:
 
 # NPC ENEMIES
 enemies = {
-    "goblin": Enemy("Goblin", hp=20, attack=5, defense=2, description=f"A sneaky {random.choice(biomes)} goblin."),
-    "dragon": Enemy("Dragon", hp=100, attack=20, defense=10, description=f"A fearsome {random.choice(biomes)} dragon."),
-    "slime": Enemy("Slime", hp=15, attack=3, defense=1, description=f"A bouncy {random.choice(biomes)} slime."),
+    "goblin": lambda: Enemy("Goblin", hp=20, attack=5, defense=2, description=f"A sneaky {random.choice(biomes)} goblin."),
+    "dragon": lambda: Enemy("Dragon", hp=100, attack=20, defense=10, description=f"A fearsome {random.choice(biomes)} dragon."),
+    "slime": lambda: Enemy("Slime", hp=15, attack=3, defense=1, description=f"A bouncy {random.choice(biomes)} slime."),
 }
