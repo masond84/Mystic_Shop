@@ -109,7 +109,7 @@ def check_task_completion(user_input, player=default_player):
         print("You have completed the tutorial! You can now explore the world and continue your adventure.")     
         print("Type 'menu' to return to the main menu or 'exit' to quit.")
 
-def contextual_feedback(user_input, player=default_player):
+def contextual_feedback(user_input, player=default_player, expected_item=None):
     item = extract_clean_item(user_input)
 
     is_valid_item = item in all_items
@@ -135,7 +135,12 @@ def contextual_feedback(user_input, player=default_player):
         if item in player.ingredient_bag:
             print(f"⚠️ '{item}' is already in your ingredient bag.")
             return
-
+        
+        if expected_item and item != expected_item:
+            print(f"You cannot add '{item}' right now. You just found '{expected_item}'")
+            print(f"💡 Only the item you discovered can be added this turn.")
+            return
+        
         player.add_ingredient(item)
         player.show_ingredient_bag()
     # Player removes an item from the ingredient bag set
@@ -163,11 +168,18 @@ def contextual_feedback(user_input, player=default_player):
 
             # Normalize name
             item_name = item_name.lower()
-            if item_name in crafted_items or item_name in regular_items:
-                player.add_to_inventory(item_name, quantity=count)
-                player.show_inventory()
-            else:
-                print(f"❌ '{item_name}' cannot be added to inventory directly. It must be crafted or discovered.")
+
+            if expected_item and item_name != expected_item:
+                print(f"You cannot add '{item_name}'. You just found '{expected_item}'")
+                print(f"💡 Only the item you discovered can be added this turn.")
+                return
+            
+            if item_name not in crafted_items and item_name not in regular_items:
+                print(f"'{item_name}' cannot be added to inventory directly. It must be crafted or discovered.")    
+                return
+            
+            player.add_to_inventory(item_name, quantity=count)
+            player.show_inventory()
         else:
             print("⚠️ Invalid syntax. Try: inventory.update({'potion': 1})")
     # Player checks items in their inventory backpack dictionary

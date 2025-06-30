@@ -84,7 +84,7 @@ def handle_item_encounter(item):
             else:
                 print("This item is unknown. Maybe inspect it or leave it.")
         elif "ingredient_bag.add" in user_input or "inventory.update" in user_input:
-            contextual_feedback(user_input)
+            contextual_feedback(user_input, player, expected_item=item)
             if item in player.ingredient_bag or item in player.inventory:
                 break # Exit after sueccessful add
         elif user_input == "examine()":
