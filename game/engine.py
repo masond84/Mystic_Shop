@@ -5,6 +5,7 @@
 # "potion" in recipes
 # "magic sword" in inventory
 from game.explore import explore_area
+from game.web_output import append_output
 from game.world import player, all_recipes
 from game import tutorials
 
@@ -32,6 +33,20 @@ def start_game():
             print("Invalid choice. Please try again.")
             
 def show_main_menu():
+    menu_text = [
+        "🧙 Welcome to the Mystic Shop!",
+        "What would you like to do?",
+        "1. Explore",
+        "2. Craft",
+        "3. Sell",
+        "4. Buy",
+        "5. Tutorial",
+        "Type the number of your choice or 'exit' to quit."
+    ]
+    for line in menu_text:
+        print(line)
+        append_output(line)
+
     print("\n🧙 Welcome to the Mystic Shop!")
     print("What would you like to do?")
     print("1. Explore")
@@ -73,3 +88,6 @@ def tutorial_loop():
             tutorials.check_task_completion(user_input, player)
         except Exception as e:
             print(f"Error: {e}")
+
+def start_game_web():
+    show_main_menu()

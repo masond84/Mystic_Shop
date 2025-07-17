@@ -47,6 +47,22 @@ def extract_clean_item(input_text: str) -> str:
 
     return raw_item  # fallback (used for warning)
 
+def hint():
+    print("\n💡 Available Commands:")
+    commands = [
+        "attack()",
+        "run()",
+        "for x in inventory: print(x)",
+        "for i, qty in inventory.items(): print(i, qty)",
+        "for thing in ingredient_bag: print(thing)",
+        "recipes.get('potion')",
+        "inventory.update({'potion': 1})",
+        "ingredient_bag.add('unicorn hair')"
+    ]
+    for cmd in commands:
+        print(f"↠ {cmd}")
+    print()
+
 def show_intro():
     global tutorial_phase
     
@@ -155,8 +171,11 @@ def contextual_feedback(user_input, player=default_player, expected_item=None):
                 print(f"⚠️ {item} is not in your ingredient bag.")
         except Exception as e:
             print(f"Error removing ingredient: {e}")
-    elif "for item in ingredient_bag" in user_input and "print(item)" in user_input:
-        player.show_ingredient_bag()
+    # Player checks items in ingredient bag set - print each item
+    elif user_input.strip().startswith("for") and "ingredient_bag" in user_input:
+        result = player.show_ingredient_bag(command=user_input)
+        return result
+    
     ### INVENTORY MANAGEMENT ###
     # Player adds an item to the inventory backpack dictionary
     elif user_input.startswith("inventory.update("):
@@ -182,16 +201,23 @@ def contextual_feedback(user_input, player=default_player, expected_item=None):
             player.show_inventory()
         else:
             print("⚠️ Invalid syntax. Try: inventory.update({'potion': 1})")
+    
+    # Display items in inventory
+    elif user_input.strip().startswith("for") and "inventory" in user_input and "print" in user_input:
+        result = player.show_inventory(command=user_input, suggest_usage=True)
+        return result
+    
     # Player checks items in their inventory backpack dictionary
     elif user_input.startswith("inventory.keys("):
         if player.inventory:
-            player.show_inventory()
+            player.show_inventory(suggest_usage=True)
             return True
         else:
             print("\n🎒 Inventory:")
             print("...")
             print("Your inventory is empty")
             return True
+        
     ### RECIPE MANAGEMENT ###
     elif user_input.strip().startswith("recipes.get("):
         match = re.search(r"recipes\.get\(['\"](.+?)['\"]\)", user_input)
@@ -201,6 +227,36 @@ def contextual_feedback(user_input, player=default_player, expected_item=None):
                 player.learn_recipe(recipe_name)
     elif re.match(r"^for\s+\w+,\s*\w+\s+in\s+recipes\.items\(\):", user_input.strip()):
         player.show_learned_recipes()
+    
+    ### PLAYER MANAGEMENT ###
+    elif user_input.startswith("use_item("):
+        match = re.search(r"use_item\(\s*['\"](.+?)['\"]\s*\)", user_input)
+
+        if match:
+            item = match.group(1).strip()
+            player.use_item(item)
+            return True
+        else:
+            print("⚠️ Invalid syntax. Try: use_item('item_name')")
+
+    ### USER HINTS ###
+    elif user_input.strip() == "hint()":
+        hint()
+
+    ### CHEAT CODES ###
+    elif user_input.startswith("cheat_add_items("):
+        try:
+            # Extract dict from the string safely
+            match = re.search(r"cheat_add_items\((\{.+?\})\)", user_input)
+            if match:
+                item_dict = eval(match.group(1))
+                player.cheat_add_items(item_dict)
+                print("🎯 Cheat activated: Items added to inventory.")
+            else:
+                print("⚠️ Invalid cheat syntax. Try: cheat_add_items({'potion': 3})")
+        except Exception as e:
+            print(f"Cheat failed: {e}")
+        return True
 
 def examine_item(item_name):
     if item_name in ingredient_items:

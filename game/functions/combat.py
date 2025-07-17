@@ -29,12 +29,16 @@ def engage_battle(enemy, player=default_player):
 
     while enemy.is_alive() and player.hp > 0:
         print("🛡️ Battle Status:")
-        print(f"{player.name}'s HP:   {color_text(render_health_bar(player.hp, 115), 'green')} {player.hp}/115")
-        print(f"{enemy.name}'s HP: {color_text(render_health_bar(enemy.hp, enemy.max_hp), 'red')} {enemy.hp}/{enemy.max_hp}\n")
+        print(f"{player.name}'s HP:   {color_text(render_health_bar(player.hp, 115), 'green')}")
+        print(f"{enemy.name}'s HP: {color_text(render_health_bar(enemy.hp, enemy.max_hp), 'red')}\n")
 
         # Prompt Player Action
         print(f'Your turn! Choose an action:')
-        print("Example: attack(), run(), inventory.show()")
+        # Provide player with action hints
+        print("↠ attack()")
+        print("↠ run()")
+        print("↠ hint()")
+
         action = input(">>> ").strip().lower()
 
         if contextual_feedback(action, player):

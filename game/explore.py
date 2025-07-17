@@ -98,7 +98,7 @@ def explore_area():
 
     while True:
         encounter = random.choice(encounters)
-        encounter = encounters[0] # For testing, force item encounter
+        #encounter = encounters[1] # For testing, force item encounter
 
         # Generate a random occurencce
         if encounter["type"] == "item":
